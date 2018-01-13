@@ -2,14 +2,7 @@
 title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
-  - ruby
-  - python
   - javascript
-
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 includes:
   - errors
@@ -17,223 +10,657 @@ includes:
 search: true
 ---
 
-# Introduction
+# Overview &mdash; MoreRecipes Api
+Welcome to the MoreRecipes API documentation. This is the API used by the MoreRecipes web interface, so everything the web ui is able to do can also be accomplished via the API.
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+This API provides the means for you to share, view and manage your recipes and those of others.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+**`BASE API URL:`** ` https://more-recipes.herokuapp.com/api/v1/`
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+# Making Request
 
-# Authentication
+An authorization token is required to access all endpoints except the signup and Login endpoints. Use the login/signup endpoint to get a token
 
-> To authorize, use this code:
+A token generated expires 48 hours after it has being generated.
 
-```ruby
-require 'kittn'
+The token can be placed in `req.headers`, `req.body` or `req.query`
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
+`token: averylongrandom.jsonwebtokenstring.requiredforauthentication`
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+  You must replace <code>averylongrandom.jsonwebtokenstring.requiredforauthentication</code> with your personal auth token.
 </aside>
 
-# Kittens
+# Returning a list of items
+All our api endpoints that returns a list of items are paginated by default, the response body includes pagination metadata which is described below. The pagination can be controlled using the query parameters page and limit
 
-## Get All Kittens
+### Query Parameters
+Parameter | Default | Description
+--------- | ------- | -----------
+page | 1 | The page number
+limit | 12 | The max number of items per page
 
-```ruby
-require 'kittn'
+### Pagination Metadata
+key | Description
+--- | -----------
+pages | An array of all page numbers
+totalCount | Total number of items in the database
+pageSize | The number of items returned for a page
+page | The current page
+last | The last page available
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
+# User
+## User signup
+> Request Body
 
 ```json
-[
   {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "user": {
+      "fullname": "William Olojede",
+      "email": "william.olojede@yahoo.com",
+      "password": "password"
+    }
   }
-]
 ```
 
-This endpoint retrieves all kittens.
+> Response Body
+
+```json
+  {
+      "status": "success",
+      "message": "Account created",
+      "user": {
+          "id": 29,
+          "email": "william.olojede@yahoo.com",
+          "fullname": "William Olojede",
+          "updatedAt": "2018-01-12T10:31:54.659Z",
+          "createdAt": "2018-01-12T10:31:54.659Z",
+          "username": null,
+          "imgUrl": null
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyOX0sImlhdCI6MTUxNTc1MzExNCwiZXhwIjoxNTE1NzU2NzE0fQ.sG-zNYLLSMTm6MtuhQ3XGZuTzsMqykeZSSzROkUvkNw"
+  }
+```
+Creates a new user
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+* Endpoint: `/users/signin`
+* Verb: `POST`
+* Body: `(application/json)`
+
+### HTTP Response
+* StatusCode: `201 - Created`
+* Body: `(application/json)`
+
+## User login
+> Request Body
+
+```json
+  {
+    "user": {
+      "email": "william.olojede@yahoo.com",
+      "password": "password"
+    }
+  }
+```
+
+> Response Body
+
+```json
+  {
+    "status": "success",
+    "message": "You are successfully logged in",
+    "user": {
+        "id": 29,
+        "username": null,
+        "email": "william.olojede@yahoo.com",
+        "fullname": "William Olojede",
+        "imgUrl": null,
+        "createdAt": "2018-01-12T10:31:54.659Z",
+        "updatedAt": "2018-01-12T10:31:54.659Z"
+    },
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyOX0sImlhdCI6MTUxNTc1Mzg2MywiZXhwIjoxNTE1NzU3NDYzfQ.KTXHD-SDIpJr_I5hixbm9R2OJtttDH1IKK58bCwGykE"
+  }
+```
+Logs in user
+
+### HTTP Request
+
+* Endpoint: `/users/login`
+* Verb: `POST`
+* Body: `(application/json)`
+
+### HTTP Response
+* StatusCode: `200`
+* Body: `(application/json)`
+
+## User profile
+> Response Body
+
+```json
+{
+  "status": "success",
+  "message": "user found",
+  "user": {
+    "id": 29,
+    "username": null,
+    "email": "william.olojede@yahoo.com",
+    "fullname": "William Olojede",
+    "imgUrl": null,
+    "createdAt": "2018-01-12T10:31:54.659Z",
+    "updatedAt": "2018-01-12T10:31:54.659Z"
+  }
+}
+```
+Gets user profile
+
+### HTTP Request
+* Endpoint: `/users/:uid`
+* Verb: `GET`
+* Body: `(application/json)`
+
+### HTTP Response
+* StatusCode: `200`
+* Body: `(application/json)`
+
+## User profile update
+No endpoint available yet to update a user's detail
+
+## User Favorite list
+> Response Body
+
+```json
+{
+  "status": "success",
+  "recipes": [
+      {
+          "id": 1,
+          "name": "Jollof Rice",
+          "description": "some random description",
+          ...
+          "createdAt": "2017-11-17T10:51:14.594Z",
+          "updatedAt": "2017-11-17T10:51:14.594Z",
+          "owner": 8
+      },
+      ...
+  ],
+  "pagination": {
+      "pages": [
+          1,
+          2
+      ],
+      "totalCount": 21,
+      "pageSize": 12,
+      "page": 1,
+      "last": 2
+  }
+}
+```
+Gets a paginated list of all recipes favorited by a user
+
+### HTTP Request
+* Endpoint: `/users/:uid/favorites`
+* Verb: `GET`
+* Body: `(application/json)`
+
+### HTTP Response
+* StatusCode: `200`
+* Body: `(application/json)`
+
+
+## User Recipes List
+> Response Body
+
+```json
+{
+  "status": "success",
+  "recipes": [
+      {
+          "id": 1,
+          "name": "Jollof Rice",
+          "description": "some random description",
+          ...
+          "createdAt": "2017-11-17T10:51:14.594Z",
+          "updatedAt": "2017-11-17T10:51:14.594Z",
+          "owner": 8
+      },
+      ...
+  ],
+  "pagination": {
+      "pages": [
+          1,
+          2
+      ],
+      "totalCount": 21,
+      "pageSize": 12,
+      "page": 1,
+      "last": 2
+  }
+}
+```
+Gets a paginated list of all recipes created by a user
+
+### HTTP Request
+* Endpoint: `/users/:uid/favorites`
+* Verb: `GET`
+* Body: `(application/json)`
+
+### HTTP Response
+* StatusCode: `200`
+* Body: `(application/json)`
+
+# Recipes
+## Create recipe
+> Request Body
+
+```json
+{
+  "recipe": {
+    "name": "very delicious dish",
+    "description": "This is the recipe for a very delicious dish",
+    "img_url": "https://imgurlfordish.com/verydelicousdish.jpg",
+    "ingredients": [
+      "ingredient 1",
+      "ingredient 2"
+    ],
+    "instructions": [
+      "This is the first step in cooking this delicious dish",
+      "This is the next step"
+    ]
+  }
+}
+```
+
+> Response Body
+
+```json
+{
+  "recipe": {
+    "upVoteCount": 0,
+    "downVoteCount": 0,
+    "favoriteCount": 0,
+    "viewCount": 0,
+    "id": 5,
+    "name": "very delicious dish",
+    "description": "This is the recipe for a very delicious dish",
+    "img_url": "https://imgurlfordish.com/verydelicousdish.jpg",
+    "ingredients": [
+        "ingredient 1",
+        "ingredient 2"
+    ],
+    "instructions": [
+        "This is the first step in cooking this delicious dish",
+        "This is the next step"
+    ],
+    "owner": 29,
+    "updatedAt": "2018-01-12T13:21:52.287Z",
+    "createdAt": "2018-01-12T13:21:52.287Z"
+  },
+  "message": "recipe created successfully",
+  "status": "success"
+}
+```
+
+Creates a new recipe
+
+### HTTP Request
+* Endpoint: `/recipes`
+* Verb: `POST`
+* **Requires Token: True**
+
+### HTTP Response
+* StatusCode: `201: Created`
+* Body: `(application/json)`
+
+
+## Get all recipes
+> Response body
+
+```json
+{
+  "recipes": [
+    {
+      "id": 27,
+      "name": "very delicious dish",
+      "description": "This is one of my 'go to' recipes ",
+      ...
+      "User": {
+        "id": 11,
+        "username": null,
+        "fullname": "Email Mail"
+      }
+    },
+    ...
+    {
+      "id": 28,
+      "name": "very delicious dish",
+      "description": "This is one of my 'go to' recipes ",
+      ...
+      "User": {
+        "id": 11,
+        "username": null,
+        "fullname": "Email Mail"
+      }
+    }
+  ],
+  "pagination": {
+    "pages": [
+        1,
+        2,
+        ...
+        10,
+        11,
+        12
+    ],
+    "totalCount": 139,
+    "pageSize": 12,
+    "page": 1,
+    "last": 12
+  },
+  "status": "success"
+}
+```
+
+### HTTP Request
+* Endpoint: `/recipes`
+* Verb: `GET`
+
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`
 
 ### Query Parameters
 
-Parameter | Default | Description
+Parameter | Values | Description
 --------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+sort | upvotes | Sort by criteria
+order | descending | Direction of ordering
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
+## Get a recipe
+> Response Body
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "recipe": {
+    "id": 35,
+    "name": "very delicious dish",
+    "description": "This is the recipe for a very delicious dish",
+    "img_url": "https://imgurlfordish.com/verydelicousdish.jpg",
+    "ingredients": [
+      "ingredient 1",
+      "ingredient 2"
+    ],
+    "instructions": [
+      "This is the first step in cooking this delicious dish",
+      "This is the next step"
+    ],
+    "upVoteCount": 0,
+    "downVoteCount": 0,
+    "favoriteCount": 0,
+    "viewCount": 1,
+    "createdAt": "2017-11-11T09:07:14.446Z",
+    "updatedAt": "2018-01-12T14:05:39.097Z",
+    "owner": 11,
+    "User": {
+      "id": 11,
+      "username": null,
+      "fullname": "Email Mail"
+    }
+  },
+  "status": "success"
 }
 ```
 
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
 ### HTTP Request
+* Endpoint: `/recipes/:id`
+* Verb: `GET`
+* `:id`: `recipe id`
 
-`GET http://example.com/kittens/<ID>`
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`
 
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
+## Add review on recipe
+> Request Body
 
 ```json
 {
-  "id": 2,
-  "deleted" : ":("
+  "content": "Whoever told u that u can cook is a bloody liar"
 }
 ```
 
-This endpoint deletes a specific kitten.
+> Response Body
+
+```json
+{
+  "status": "success",
+  "reviews": [
+    {
+      "id": 86,
+      "content": "Whoever told u that u can cook is a bloody liar",
+      "createdAt": "2018-01-13T00:41:59.673Z",
+      "User": {
+        "id": 29,
+        "username": null,
+        "fullname": "William Olojede"
+      }
+    },
+    ...
+  ],
+  "pagination": {
+    "pages": [
+      1,
+      2,
+      3
+    ],
+    "totalCount": 30,
+    "pageSize": 12,
+    "page": 1,
+    "last": 3
+  },
+  "message": "Your review has been recorded"
+}
+```
+
+## Get all reviews for a recipe
+> Response Body
+
+```json
+{
+    "status": "success",
+    "reviews": [
+        {
+            "id": 84,
+            "content": "dude really???",
+            "createdAt": "2018-01-09T03:33:40.835Z",
+            "User": {
+                "id": 27,
+                "username": null,
+                "fullname": "Ajale Aj"
+            }
+        },
+        ...
+        {
+            "id": 83,
+            "content": "shit sucks3",
+            "createdAt": "2018-01-09T03:27:25.255Z",
+            "User": {
+                "id": 27,
+                "username": null,
+                "fullname": "Ajale Aj"
+            }
+        }
+    ],
+    "pagination": {
+        "pages": [
+            1,
+            2,
+            3
+        ],
+        "totalCount": 29,
+        "pageSize": 12,
+        "page": 1,
+        "last": 3
+    }
+}
+```
 
 ### HTTP Request
+* Endpoint: `/recipes/:id/reviews`
+* Verb: `GET`
+* `:id`: `recipe id`
 
-`DELETE http://example.com/kittens/<ID>`
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`
 
-### URL Parameters
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
+## Modify a recipe
+> Request Body
 
+```json
+{
+	"update": {
+	  "name": "some random very delicious dish"
+	}
+}
+```
+
+> Response body
+
+```json
+{
+  "status": "success",
+  "message": "Recipe updated successfully",
+  "recipe": {
+    "id": 169,
+    "name": "some random very delicious dish",
+    "description": "This is the recipe for a very delicious dish",
+    ...
+    "createdAt": "2018-01-13T00:09:15.646Z",
+    "updatedAt": "2018-01-13T00:10:48.024Z",
+    "owner": 29
+  }
+}
+```
+
+
+
+### HTTP Request
+* Endpoint: `/recipes/:id`
+* Verb: `PUT`
+* `:id`: `recipe id`
+* **Must be owner**
+
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`
+
+
+## (up, down)Vote a recipe
+> Response body &mdash; downVote
+
+```json
+{
+  "recipe": {
+    "id": 169,
+    "name": "some random very delicious dish",
+    "description": "This is the recipe for a very delicious dish",
+    ...
+    "upVoteCount": 0,
+    "downVoteCount": 1,
+    "favoriteCount": 0,
+    "viewCount": 1,
+    "createdAt": "2018-01-13T00:09:15.646Z",
+    "updatedAt": "2018-01-13T00:13:58.362Z",
+    "owner": 29
+  },
+  "status": "success",
+  "message": "You disliked this recipe"
+}
+```
+
+> Response body &mdash; upVote
+
+```json
+{
+  "recipe": {
+    "id": 169,
+    "name": "some random very delicious dish",
+    "description": "This is the recipe for a very delicious dish",
+    "img_url": "https://imgurlfordish.com/verydelicousdish.jpg",
+    ...
+    "upVoteCount": 1,
+    "downVoteCount": 0,
+    "favoriteCount": 0,
+    "viewCount": 1,
+    "createdAt": "2018-01-13T00:09:15.646Z",
+    "updatedAt": "2018-01-13T00:17:57.324Z",
+    "owner": 29
+  },
+  "status": "success",
+  "message": "You liked this recipe"
+}
+```
+
+### HTTP Request
+* Endpoint: `/recipes/:id/vote-{up, down}`
+* Verb: `POST`
+* `:id`: `recipe id`
+
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`
+
+## Favorite a recipe
+
+> Response body
+
+```json
+{
+  "recipe": {
+    "id": 2,
+    "name": "Jollof Rice",
+    ...
+    "upVoteCount": 0,
+    "downVoteCount": 0,
+    "favoriteCount": 3,
+    "viewCount": 5,
+    "createdAt": "2017-10-23T08:08:47.566Z",
+    "updatedAt": "2018-01-13T00:34:03.699Z",
+    "owner": 2
+  },
+  "status": "success",
+  "message": "Recipe added to your favorite list"
+}
+```
+
+### HTTP Request
+* Endpoint: `/recipes/:id/favorite`
+* Verb: `POST`
+* `:id`: `recipe id`
+
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`
+
+## Delete Recipe
+> Response body
+
+```json
+{
+  "status": "success",
+  "message": "Recipe deleted successfully"
+}
+```
+
+### HTTP Request
+* Endpoint: `/recipes/:id`
+* Verb: `DELETE`
+* `:id`: `recipe id`
+* **Must be owner**
+
+### HTTP Response
+* StatusCode: `200: Ok`
+* Body: `(application/json)`

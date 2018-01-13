@@ -13,6 +13,8 @@ set :markdown,
     no_intra_emphasis: true,
     renderer: UniqueHeadCounter
 
+set :build_dir, '../docs'
+
 # Assets
 set :css_dir, 'stylesheets'
 set :js_dir, 'javascripts'
@@ -33,14 +35,15 @@ activate :autoprefixer do |config|
   config.inline   = true
 end
 
-# Github pages require relative links
-activate :relative_assets
-set :relative_links, true
-
 # Build Configuration
 configure :build do
   # If you're having trouble with Middleman hanging, commenting
   # out the following two lines has been known to help
+  set :css_dir, 'docs-assets/stylesheets'
+  set :js_dir, 'docs-assets/javascripts'
+  set :images_dir, 'docs-assets/images'
+  set :fonts_dir, 'docs-assets/fonts'
+
   activate :minify_css
   activate :minify_javascript
   # activate :relative_assets
