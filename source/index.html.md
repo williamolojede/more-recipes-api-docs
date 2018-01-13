@@ -463,6 +463,15 @@ order | descending | Direction of ordering
 }
 ```
 
+### HTTP Request
+* Endpoint: `/recipes/:id/reviews`
+* Verb: `POST`
+* `:id`: `recipe id`
+
+### HTTP Response
+* StatusCode: `201: Created`
+* Body: `(application/json)`
+
 ## Get all reviews for a recipe
 > Response Body
 
