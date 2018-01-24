@@ -165,7 +165,45 @@ Gets user profile
 * Body: `(application/json)`
 
 ## User profile update
-No endpoint available yet to update a user's detail
+
+> Request Body 
+
+```json
+{
+	"update": {
+	  "fullname": "William I. Olojede"
+	}
+}
+```
+
+> Response Body
+
+```json
+{
+  "status": "success",
+  "message": "User Details updated successfully",
+  "user": {
+    "id": 11,
+    "username": null,
+    "email": "fola@john.com",
+    "fullname": "William I. Olojede",
+    "imgUrl": null,
+    "createdAt": "2017-11-09T09:07:48.853Z",
+    "updatedAt": "2018-01-24T09:06:12.841Z"
+  }
+}
+```
+
+Update the details of a user
+### HTTP Request
+* Endpoint: `/users/:uid`
+* Verb: `PUT`
+* Body: `(application/json)`
+* `:uid`: `user id`
+
+### HTTP Response
+* StatusCode: `200`
+* Body: `(application/json)`
 
 ## User Favorite list
 > Response Body
